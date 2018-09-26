@@ -123,7 +123,6 @@ extern	t_commands g_cmd[];
 */
 
 void			cmd_entrypoint(t_query *qu, char **args);
-void			main_encryption(t_query *qu, char **av, int i, int input);
 
 /*
 ** ENCRYPTING.
@@ -131,8 +130,8 @@ void			main_encryption(t_query *qu, char **av, int i, int input);
 
 char			*read_input(int fd);
 void			encrypt_arg(t_query *qu, char **flag_pos, int *i);
-void			encrypt_input(t_query *qu, int flag);
-void			encrypt_file(char *filename, int fd, t_query *qu);
+void			encrypt_input(t_query *qu, int bol);
+void			encrypt_file(t_query *qu, char *file, int fd);
 
 /*
 **	MD5_ALGO.

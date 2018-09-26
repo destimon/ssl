@@ -1,22 +1,33 @@
-#include "ft_ssl.h"
+#include "../inc/ft_ssl.h"
 
-char	*read_input(int fd)
+void	encrypt_file(t_query *qu, char *file, int fd)
 {
-	char	*str;
-	char	buff[STACKSIZE + 1];
-	int		ret;
-	char	*index;
+	char		*inp;
+	struct stat stats;
+	char		*command;
 
-	str = ft_strnew(0);
-	ret = 0;
-	while ((ret = read(fd, buff, STACKSIZE)))
+	lstat(file, &stats);
+	// if ((st.st_mode & S_IFMT) == S_IFDIR)
+	if (S_ISDIR(stats.st_mode))
 	{
-		index = str;
-		buff[ret] = '\0';
-		str = ft_strjoin(str, buff);
-		free(index);
+		illegal_moves(file, qu->cmd, CMDERR_ISDIR);
+		return ;
 	}
-	return (str);
+	inp = read_input(fd);
+	command = ft_strdup(g_cmd[qu->cmd].cmdname);
+	if (!(qu->flags & Q_OPT) && !(qu->flags & R_OPT))
+	{
+		ft_putstr(command);
+		ft_putstr("(");
+		ft_putstr(file);
+		ft_putstr(")= ");
+	}
+	g_cmd[qu->cmd].function(inp);
+	if ((qu->flags & R_OPT) && !(qu->flags & Q_OPT))
+		ft_putstr(file);
+	ft_putchar('\n');
+	free(inp);
+	free(command);
 }
 
 void	encrypt_arg(t_query *qu, char **flag_pos, int *i)
@@ -45,49 +56,40 @@ void	encrypt_arg(t_query *qu, char **flag_pos, int *i)
 	free(command);
 }
 
-void	encrypt_input(t_query *qu, int flag)
+char	*read_input(int fd)
 {
-	char *str;
+	char	*inp;
+	int		bytes;
+	char	stack[STACKSIZE + 1];
+	char	*index;
+
+	bytes = 0;
+	inp = ft_strnew(0);
+	while ((bytes = read(fd, stack, STACKSIZE)))
+	{
+		index = inp;
+		stack[bytes] = '\0';
+		inp = ft_strjoin(inp, stack);
+		free(index);
+	}
+	return (inp);
+}
+
+void	encrypt_input(t_query *qu, int bol)
+{
+	char *inp;
 
 	if ((qu->flags & P_OPT))
-		str = ft_strnew(0);
+		inp = ft_strnew(0);
 	else
 	{
-		str = read_input(0);
+		inp = read_input(0);
 		qu->flags |= P_OPT;
 	}
-	if (flag)
-		ft_putstr(str);
-	g_cmd[qu->cmd].function(str);
+	if (bol)
+		ft_putstr(inp);
+	g_cmd[qu->cmd].function(inp);
 	ft_putchar('\n');
-	free(str);
+	free(inp);
 }
 
-void	encrypt_file(char *filename, int fd, t_query *qu)
-{
-	char		*str;
-	struct stat st;
-	char		*command;
-
-	lstat(filename, &st);
-	if ((st.st_mode & S_IFMT) == S_IFDIR)
-	{
-		illegal_moves(filename, qu->cmd, CMDERR_ISDIR);
-		return ;
-	}
-	str = read_input(fd);
-	command = ft_strdup(g_cmd[qu->cmd].cmdname);
-	if (!(qu->flags & Q_OPT) && !(qu->flags & R_OPT))
-	{
-		ft_putstr(command);
-		ft_putstr("(");
-		ft_putstr(filename);
-		ft_putstr(")= ");
-	}
-	g_cmd[qu->cmd].function(str);
-	if ((qu->flags & R_OPT) && !(qu->flags & Q_OPT))
-		ft_putstr(filename);
-	ft_putchar('\n');
-	free(str);
-	free(command);
-}

@@ -1,4 +1,4 @@
-#include "ft_ssl.h"
+#include "../inc/ft_ssl.h"
 
 static const	uint32_t g_k[64] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
@@ -149,5 +149,5 @@ void			sha256_printkey(char *content)
 			printf("%.8x", sh->key[i]);
 		free(sh);
 	}
-	// printf("\n");
+	printf("\n");
 }

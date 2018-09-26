@@ -1,4 +1,4 @@
-#include "ft_ssl.h"
+#include "../inc/ft_ssl.h"
 
 void	illegal_moves(char *arg, int cmdid, int errid)
 {

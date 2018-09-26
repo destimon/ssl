@@ -1,4 +1,4 @@
-#include "ft_ssl.h"
+#include "../inc/ft_ssl.h"
 
 t_commands	g_cmd[] = {
 	{"md5", "MD5 Message Digest", &md5_printkey},

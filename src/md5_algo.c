@@ -1,4 +1,4 @@
-#include "ft_ssl.h"
+#include "../inc/ft_ssl.h"
 
 static const	uint32_t g_s[] = {
 	7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
