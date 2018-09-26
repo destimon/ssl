@@ -1,60 +1,45 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: dcherend <dcherend@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2018/06/17 15:19:05 by dcherend          #+#    #+#              #
-#    Updated: 2018/09/21 13:09:08 by dcherend         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+NAME := ft_ssl
 
-NAME 			= ft_ssl
+LIB_DIR := ./lib/libft/
+SRC_DIR := ./src/
+OBJ_DIR := ./obj/
+INC_DIR := ./inc/
 
-LIBFT 			= $(LIBFT_DIR)libft.a
-LIBFT_DIR 		= $(LIB_DIR)libft/
-LIBFT_FLAGS 	= -lft -L $(LIBFT_DIR)
-LIBFT_DIR 		= ./lib/libft/
-LIBFT_HDR_DIR 	= ./lib/libft/
-OBJ_DIR 		= ./obj/
-SRC_DIR 		= ./src/
+SRCS := main.c md5_algo.c core.c encrypting.c sha256_algo.c output.c
+OBJ = $(addprefix $(OBJ_DIR), $(SRCS:.c=.o))
 
-CC 				= gcc
-CFLAGS 			= -I$(HDR_DIR) -I$(LIBFT_HDR_DIR) # -Wall -Werror -Wextra \
+CC := gcc
+FLAGS := #-Wall -Wextra -Werror
 
-SRC 			= main.c loop.c error.c hash.c cmd.c
-OBJ 			= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
+LIBFT = $(LIB_DIR)libft.a
+LIBFT_FLAGS := -L $(LIB_DIR) -lft
+LIBFT_INC := $(LIB_DIR)includes
 
-LIB_BIN 		= $(LIBFT_DIR)libft.a
-LIB_FLAGS 		= -lft -L$(LIBFT_DIR)
-LIB 			= $(MAKE) -C $(LIBFT_DIR)
+HDR_FLAGS := -I $(LIBFT_INC) -I $(INC_DIR)
 
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(OBJ)
-	$(CC) $(OBJ) $(LIBFT_FLAGS) -o $(NAME)
+	$(CC) $(OBJ) $(FLAGS) $(HDR_FLAGS) -o $(NAME) $(LIBFT)
 
 $(OBJ): | $(OBJ_DIR)
 
 $(OBJ_DIR):
 	mkdir $(OBJ_DIR)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c inc/$(HEAD)
-	$(CC) -c $< -o $@ $(HEADERS_FLAGS) $(CFLAGS)
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c
+	$(CC) -c $< -o $@ $(FLAGS) $(HDR_FLAGS)
 
 $(LIBFT):
-	make -C $(LIBFT_DIR)
+	make -C $(LIB_DIR)
 
 clean:
+	make clean -C $(LIB_DIR)
 	rm -f $(OBJ)
-	make clean -C $(LIBFT_DIR)
 
-fclean: clean
+fclean:
+	make fclean -C $(LIB_DIR)
 	rm -f $(NAME)
 	rm -rf $(OBJ_DIR)
-	make fclean -C $(LIBFT_DIR)
 
 re: fclean all
-
-.PHONY: all clean fclean re

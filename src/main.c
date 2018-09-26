@@ -1,36 +1,33 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: dcherend <dcherend@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/09/18 14:54:34 by dcherend          #+#    #+#             */
-/*   Updated: 2018/09/18 15:40:35 by dcherend         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include "ft_ssl.h"
 
-#include "../inc/ft_ssl.h"
+t_commands	g_cmd[] = {
+	{"md5", "MD5 Message Digest", &md5_printkey},
+	{"sha256", "SHA256 Message Digest", &sha256_printkey}
+};
 
-void	init_loop(void)
+static t_query		*init_query(void)
 {
-	char	**cmd;
+	t_query			*qu;
 
-	while (1)
+	qu = (t_query*)malloc(sizeof(t_query));
+	if (qu)
 	{
-		ft_putstr(UI_PROMPT);
-		cmd = read_cmd();
-		handle_cmd(cmd);
+		qu->cmd = 0;
+		qu->flags = 0;
+		return (qu);
 	}
+	return (NULL);
 }
 
 int		main(int argc, char **argv)
 {
-	if (argc == 1)
-		init_loop();
+	t_query *qu;
+
+	if (argc > 1)
+		qu = init_query();
+		if (qu)
+			cmd_entrypoint(qu, argv);
 	else
-	{
-		
-	}
+		show_usage();
 	return (0);
 }
