@@ -1,7 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_ssl.h                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcherend <dcherend@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/09/27 15:32:43 by dcherend          #+#    #+#             */
+/*   Updated: 2018/09/27 17:27:41 by dcherend         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef FT_SSL_H
 # define FT_SSL_H
 
-/*	
+/*
 **		==dcherend's personal guard<<
 **		||
 **		||
@@ -16,7 +28,7 @@
 **(O_O) /~~[_____]~~\ (O_O)
 **     (  |       |  )
 **    [~` ]       [ '~]
-**    |~~|         |~~| 
+**    |~~|         |~~|
 **    |  |         |  |
 **   _<\/>_       _<\/>_
 **  /_====_\     /_====_\
@@ -85,12 +97,11 @@ typedef struct	s_query
 	int			flags;
 }				t_query;
 
-
 typedef struct	s_package
 {
 	uint8_t		*key;
 	uint8_t		*content;
-	int 		content_len;
+	int			content_len;
 	int			key_len;
 	uint32_t	vars[4];
 	uint32_t	varsup[4];
@@ -113,7 +124,7 @@ typedef struct	s_commands
 {
 	char		*cmdname;
 	char		*desc;
-	void		(*function)(char *);
+	void		(*function)(char *, int);
 }				t_commands;
 
 extern	t_commands g_cmd[];
@@ -128,25 +139,26 @@ void			cmd_entrypoint(t_query *qu, char **args);
 ** ENCRYPTING.
 */
 
-char			*read_input(int fd);
+char			*read_input(int fd, int *size);
 void			encrypt_arg(t_query *qu, char **flag_pos, int *i);
 void			encrypt_input(t_query *qu, int bol);
 void			encrypt_file(t_query *qu, char *file, int fd);
+void			sha256vars(t_sha256 *sh, int i);
 
 /*
 **	MD5_ALGO.
 */
 
-void			md5_printkey(char *content);
+void			md5_printkey(char *content, int size);
 void			main_loopbody(t_package *md, int i);
 void			md5_encrypt(t_package *md);
-t_package		*generate_md5package(uint8_t *content);
+t_package		*generate_md5package(uint8_t *content, int size);
 
 /*
 **	SHA256_ALGO.
 */
 
-void			sha256_printkey(char *content);
+void			sha256_printkey(char *content, int size);
 void			sha256_producefinal(t_sha256 *sh);
 void			sha256_encrypt(t_sha256 *sh);
 void			sha256_chunkprocessing(t_sha256 *sh);
@@ -158,7 +170,7 @@ void			sha256_chunkprocessing(t_sha256 *sh);
 void			show_usage(void);
 void			invalid_cmd(char *cmd);
 void			throw_error(char *exp, int cmd_id);
-int				is_flag(char *arg);
 void			illegal_moves(char *arg, int cmdid, int errid);
+void			file_output(char *command, char *file);
 
 #endif

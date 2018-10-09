@@ -6,7 +6,7 @@
 /*   By: dcherend <dcherend@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 18:33:08 by dcherend          #+#    #+#             */
-/*   Updated: 2018/09/07 18:41:26 by dcherend         ###   ########.fr       */
+/*   Updated: 2018/09/27 17:25:14 by dcherend         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,8 @@ int					count_occ(const char *str, char occ);
 char				*remove_occ(char *str, char occ);
 char				**ft_strsplit_smart(char const *s, const char *dels);
 char				*ft_strdup_char(char c);
-
+char				*ft_strjoin_bytes(char const *s1, char const *s2,
+					size_t size1, size_t size2);
 /*
 ** LISTS.
 */

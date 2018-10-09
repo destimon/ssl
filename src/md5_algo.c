@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   md5_algo.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcherend <dcherend@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/09/27 15:02:46 by dcherend          #+#    #+#             */
+/*   Updated: 2018/09/27 16:02:14 by dcherend         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/ft_ssl.h"
 
 static const	uint32_t g_s[] = {
@@ -22,20 +34,21 @@ static const	uint32_t g_k[] = {
 	0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
 	0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
 	0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
-	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391};
+	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
+};
 
-void			main_loopbody(t_package *pckg, int i)
+void				main_loopbody(t_package *pckg, int i)
 {
 	if (i < 16)
 	{
-		pckg->f = (pckg->vars[B] & pckg->vars[C]) | ((~pckg->vars[B]) 
+		pckg->f = (pckg->vars[B] & pckg->vars[C]) | ((~pckg->vars[B])
 			& pckg->vars[D]);
 		pckg->g = i;
 	}
 	else if (i < 32)
 	{
 		pckg->f = (pckg->vars[D] & pckg->vars[B]) | ((~pckg->vars[D]) &
-		 pckg->vars[C]);
+		pckg->vars[C]);
 		pckg->g = (5 * i + 1) % 16;
 	}
 	else if (i < 48)
@@ -50,37 +63,36 @@ void			main_loopbody(t_package *pckg, int i)
 	}
 }
 
-void			md5_encrypt(t_package *pckg)
+void				md5_encrypt(t_package *pckg)
 {
-	int tmp;
-	int i;
-	int j;
+	int				tmp;
+	int				it[2];
 
-	j = 0;
-	while (j < pckg->key_len)
+	it[0] = 0;
+	while (it[0] < pckg->key_len)
 	{
-		pckg->chunk = (uint32_t*)(pckg->key + j);
+		pckg->chunk = (uint32_t*)(pckg->key + it[0]);
 		ft_memcpy(pckg->vars, pckg->varsup, sizeof(pckg->varsup[0]) * 4);
-		i = -1;
-		while (++i < 64)
+		it[1] = -1;
+		while (++it[1] < 64)
 		{
-			main_loopbody(pckg, i);
+			main_loopbody(pckg, it[1]);
 			tmp = pckg->vars[D];
 			pckg->vars[D] = pckg->vars[C];
 			pckg->vars[C] = pckg->vars[B];
-			pckg->vars[B] += LEFT_ROTATE((pckg->vars[A] + pckg->f + 
-				g_k[i] + pckg->chunk[pckg->g]), g_s[i]);
+			pckg->vars[B] += LEFT_ROTATE((pckg->vars[A] + pckg->f +
+				g_k[it[1]] + pckg->chunk[pckg->g]), g_s[it[1]]);
 			pckg->vars[A] = tmp;
 		}
 		pckg->varsup[A] += pckg->vars[A];
 		pckg->varsup[B] += pckg->vars[B];
 		pckg->varsup[C] += pckg->vars[C];
 		pckg->varsup[D] += pckg->vars[D];
-		j += 64;
+		it[0] += 64;
 	}
 }
 
-static t_package	*alloc_package(uint8_t *content)
+static t_package	*alloc_package(uint8_t *content, int size)
 {
 	t_package		*pckg;
 
@@ -88,7 +100,7 @@ static t_package	*alloc_package(uint8_t *content)
 	if (!content || !pckg)
 		return (NULL);
 	pckg->content = content;
-	pckg->content_len = ft_strlen((char*)content);
+	pckg->content_len = size;
 	pckg->vars[A] = VAR_A;
 	pckg->vars[B] = VAR_B;
 	pckg->vars[C] = VAR_C;
@@ -102,18 +114,18 @@ static t_package	*alloc_package(uint8_t *content)
 	return (pckg);
 }
 
-t_package		*generate_md5package(uint8_t *content)
+t_package			*generate_md5package(uint8_t *content, int size)
 {
-	t_package	*pckg;
+	t_package		*pckg;
 
-	pckg = alloc_package(content);
+	pckg = alloc_package(content, size);
 	if (!pckg)
 		return (NULL);
 	pckg->key_len = pckg->content_len * 8 + 1;
 	while (pckg->key_len++)
 	{
 		if (pckg->key_len % 512 == 448)
-			break;
+			break ;
 	}
 	pckg->key_len /= 8;
 	pckg->key = (uint8_t*)ft_memalloc(pckg->key_len + 64);
@@ -126,12 +138,12 @@ t_package		*generate_md5package(uint8_t *content)
 	return (pckg);
 }
 
-void			md5_printkey(char *content)
+void				md5_printkey(char *content, int size)
 {
-	t_package	*pckg;
-	uint8_t	*p;
+	t_package		*pckg;
+	uint8_t			*p;
 
-	pckg = generate_md5package((uint8_t*)content);
+	pckg = generate_md5package((uint8_t*)content, size);
 	if (pckg)
 	{
 		p = (uint8_t *)&pckg->varsup[A];

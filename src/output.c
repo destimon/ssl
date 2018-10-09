@@ -1,4 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   output.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcherend <dcherend@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/09/27 15:18:03 by dcherend          #+#    #+#             */
+/*   Updated: 2018/09/27 17:12:05 by dcherend         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/ft_ssl.h"
+
+void	file_output(char *command, char *file)
+{
+	ft_putstr(command);
+	ft_putstr("(");
+	ft_putstr(file);
+	ft_putstr(")= ");
+}
 
 void	illegal_moves(char *arg, int cmdid, int errid)
 {
@@ -53,4 +73,3 @@ void	invalid_cmd(char *cmd)
 	ft_putendl("Cipher commands:");
 	exit(0);
 }
-

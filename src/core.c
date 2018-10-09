@@ -1,6 +1,38 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   core.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dcherend <dcherend@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/09/27 14:46:38 by dcherend          #+#    #+#             */
+/*   Updated: 2018/09/27 15:17:34 by dcherend         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/ft_ssl.h"
 
-static void	main_encryption(t_query *qu, char **av, int i, int input)
+static void		parse_body(t_query *qu, char **parts, int *input, int *i)
+{
+	if (ft_strequ(parts[*i], "-q"))
+		qu->flags |= Q_OPT;
+	else if (ft_strequ(parts[*i], "-r"))
+		qu->flags |= R_OPT;
+	else if (ft_strequ(parts[*i], "-p"))
+	{
+		*(input) = 0;
+		encrypt_input(qu, 1);
+	}
+	else if (ft_strequ(parts[*i], "-s"))
+	{
+		*(input) = 0;
+		encrypt_arg(qu, &parts[*i], i);
+	}
+	else
+		illegal_moves(parts[*i] + 1, qu->cmd, CMDERR_ILLEGAL);
+}
+
+static void		main_encryption(t_query *qu, char **av, int i, int input)
 {
 	int fd;
 
@@ -20,7 +52,7 @@ static void	main_encryption(t_query *qu, char **av, int i, int input)
 	}
 }
 
-static int	parse_input_string(t_query *qu, char **parts, int *input)
+static int		parse_input_string(t_query *qu, char **parts, int *input)
 {
 	int	i;
 
@@ -29,29 +61,14 @@ static int	parse_input_string(t_query *qu, char **parts, int *input)
 	while (parts[i])
 	{
 		if (!(parts[i][0] && parts[i][0] == '-' && parts[i][1]))
-			break;
-		if (ft_strequ(parts[i], "-q"))
-			qu->flags |= Q_OPT;
-		else if (ft_strequ(parts[i], "-r"))
-			qu->flags |= R_OPT;
-		else if (ft_strequ(parts[i], "-p"))
-		{
-			*(input) = 0;
-			encrypt_input(qu, 1);
-		}
-		else if (ft_strequ(parts[i], "-s"))
-		{
-			*(input) = 0;
-			encrypt_arg(qu, &parts[i], &i);
-		}
-		else
-			illegal_moves(parts[i] + 1, qu->cmd, CMDERR_ILLEGAL);
+			break ;
+		parse_body(qu, parts, input, &i);
 		i++;
 	}
 	return (i);
 }
 
-void	cmd_entrypoint(t_query *qu, char **args)
+void			cmd_entrypoint(t_query *qu, char **args)
 {
 	int input;
 	int i;
@@ -69,7 +86,7 @@ void	cmd_entrypoint(t_query *qu, char **args)
 				i = parse_input_string(qu, &args[2], &input);
 				main_encryption(qu, &args[2], i, input);
 			}
-			exit(0);				
+			exit(0);
 		}
 		qu->cmd++;
 	}
